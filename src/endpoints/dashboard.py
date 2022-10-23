@@ -124,17 +124,17 @@ async def index(
 			id_area_equipment.append(item.description)
 			area_equipment.append({
 				'area': item.description,
-				'total_good_equipment':tg,
-				'total_warning_equipment':tw,
-				'total_danger_equipment':td
+				'good':tg,
+				'warning':tw,
+				'danger':td
 			})
 		else:
 			area_equipment_index = id_area_equipment.index(item.description)
 			area_equipment[area_equipment_index] = {
 				'area': item.description,
-				'total_good_equipment':tg + area_equipment[area_equipment_index]['total_good_equipment'],
-				'total_warning_equipment':tw + area_equipment[area_equipment_index]['total_warning_equipment'],
-				'total_danger_equipment':td + area_equipment[area_equipment_index]['total_danger_equipment']
+				'good':tg + area_equipment[area_equipment_index]['good'],
+				'warning':tw + area_equipment[area_equipment_index]['warning'],
+				'danger':td + area_equipment[area_equipment_index]['danger']
 			}
 
 		result_measurement.append({
@@ -150,10 +150,19 @@ async def index(
 			'threshold':performa_dictionary
 		})
 
+	for j, item_area in enumerate(area_equipment):
+		total = item_area['good'] + item_area['warning'] + item_area['danger']
+		if item_area['good'] >= int( (0.7 * total) ):
+			area_equipment[j]['status'] = 'good'
+		elif (item_area['good'] + item_area['warning']) >= int( (0.6 * total) ):
+			area_equipment[j]['status'] = 'warning'
+		else:
+			area_equipment[j]['status'] = 'bad'
+
 
 	return {
 		'areas':area_equipment,
-		'measurement_equipments': result_measurement
+		'measurement': result_measurement
 	}
 
 @router.get('/time_measurement')
