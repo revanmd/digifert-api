@@ -44,9 +44,6 @@ async def index(
 			MeasurementResPerforma.id.desc()
 		).first()
 
-		if latest_row == None :
-			return []
-
 		time_measurement = latest_row.date_time
 
 	measurement_performa = db.query(
@@ -99,7 +96,7 @@ async def index(
 		tg, tw, td = 0, 0, 0
 
 		if performa_dictionary == None:
-			print('undefined')
+			continue
 		elif  value >= performa_dictionary['l'] and value <= performa_dictionary['h'] :
 			status = 'good'
 			tg = 1
@@ -161,6 +158,9 @@ async def index(
 
 
 	return {
+		'plant': plant,
+		'section' : section,
+		'time_measurement': time_measurement,
 		'areas':area_equipment,
 		'measurement': result_measurement
 	}
@@ -185,7 +185,8 @@ async def time_measurement(
 		PerformaEquipment,
 		PerformaEquipment.id == MeasurementResPerforma.equipment_id,
 	).filter(
-		PerformaEquipment.plant == plant_id
+		PerformaEquipment.plant == plant_id,
+		PerformaEquipment.section == section_id
 	).group_by(
 		MeasurementResPerforma.date_time
 	)
