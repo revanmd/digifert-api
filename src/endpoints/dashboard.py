@@ -200,7 +200,7 @@ async def time_measurement(
 	}
 
 @router.get('/performance_overview')
-async def index(
+async def performance_overview(
 	plant: str,
 	db: Session = Depends(database.create_session)
 ):	
