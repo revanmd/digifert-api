@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dateutil.parser import parse
 from fastapi import APIRouter, Depends
 
 from src.dependencies import database
@@ -170,6 +171,8 @@ async def time_measurement(
 	section: str,
 	plant: str,
 	order:str = 'desc',
+	start_from:str = None,
+	end_to:str = None,
 	page:int = 1,
 	size:int = 10,
 	db: Session = Depends(database.create_session)
@@ -186,10 +189,18 @@ async def time_measurement(
 		PerformaEquipment.id == MeasurementResPerforma.equipment_id,
 	).filter(
 		PerformaEquipment.plant == plant_id,
-		PerformaEquipment.section == section_id
+		PerformaEquipment.section == section_id,
 	).group_by(
 		MeasurementResPerforma.date_time
 	)
+
+	if None not in [start_from, end_to]:
+		start_from = parse(start_from)
+		end_to = parse(end_to)
+		measurement_performa = measurement_performa.filter(
+			MeasurementResPerforma.date_time > start_from,
+			MeasurementResPerforma.date_time < end_to
+		) 
 
 	if order == 'asc':
 		measurement_performa = measurement_performa.order_by(MeasurementResPerforma.date_time.asc())
@@ -233,7 +244,8 @@ async def performance_overview(
 			PerformaEquipment,
 			PerformaEquipment.id == MeasurementResPerforma.equipment_id
 		).filter_by(
-			section = item
+			section = item,
+			plant = plant_id
 		).order_by(
 			MeasurementResPerforma.id.desc()
 		).first()
@@ -260,7 +272,7 @@ async def performance_overview(
 			PerformaEquipment.id == MeasurementResPerforma.equipment_id,
 		).join(
 			PerformaArea,
-			PerformaArea.id == PerformaEquipment.area_id
+			PerformaArea.id == PerformaEquipment.area_id,
 		).filter(
 			MeasurementResPerforma.date_time == item,
 			PerformaEquipment.plant == plant_id,
@@ -404,3 +416,4 @@ async def performance_overview(
 			'utility': result_measurement[2]
 		}
 	}
+
