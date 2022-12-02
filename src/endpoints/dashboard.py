@@ -242,6 +242,10 @@ async def performance_overview(
 
 	plant_id = enum_utility.check_plant(plant)
 
+	if plant_id in ['F1N','F2N', 'F3N']:
+		raise exception.bad_request_error
+
+
 	# Section ID Enumeration
 	# Urea, Ammonia, Utility
 	section_id = ['101','102','103']
