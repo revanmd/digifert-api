@@ -39,13 +39,25 @@ async def index(
 		).join(
 			PerformaEquipment,
 			PerformaEquipment.id == MeasurementResPerforma.equipment_id
-		).filter_by(
-			section = section_id
+		).filter(
+			PerformaEquipment.plant == plant_id,
+			PerformaEquipment.section == section_id
 		).order_by(
 			MeasurementResPerforma.id.desc()
 		).first()
 
-		time_measurement = latest_row.date_time
+
+		if latest_row:
+			time_measurement = latest_row.date_time
+
+	if time_measurement is None:
+		return {
+			'plant': plant,
+			'section' : section,
+			'time_measurement': '',
+			'areas':[],
+			'measurement': []
+		}
 
 	measurement_performa = db.query(
 		MeasurementResPerforma.id,
