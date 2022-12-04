@@ -110,6 +110,22 @@ async def index(
 
 		if performa_dictionary == None:
 			continue
+		elif float(0) in [performa_dictionary['h'], performa_dictionary['hh'], performa_dictionary['ll'], performa_dictionary['l']]:
+			status == 'undefined'
+			result_measurement.append({
+				'id': item.id,
+				'equipment_id': item.equipment_id,
+				'value': value,
+				'tag_number': item.tag_number,
+				'main_equipment_no': item.main_equipment_no,
+				'sensor_equipment_no': item.sensor_equipment_no,
+				'section': section,
+				'status': status,
+				'area': item.description,
+				'threshold':performa_dictionary
+			})
+			continue
+
 		elif  value >= performa_dictionary['l'] and value <= performa_dictionary['h'] :
 			status = 'good'
 			tg = 1
@@ -242,7 +258,7 @@ async def performance_overview(
 
 	plant_id = enum_utility.check_plant(plant)
 
-	if plant_id in ['F1N','F2N', 'F3N']:
+	if plant_id in ['F1N','F2N', 'F3N', 'STGBB']:
 		raise exception.bad_request_error
 
 
