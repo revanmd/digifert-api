@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from src.endpoints import (
 	dashboard,
+	dashboard_elogsheet,
 	elogsheet_area,
 	elogsheet_equipment,
 	performa_area,
@@ -14,6 +15,7 @@ from src.endpoints import (
 
 router = APIRouter()
 router.include_router(dashboard.router)
+router.include_router(dashboard_elogsheet.router)
 router.include_router(elogsheet_area.router)
 router.include_router(elogsheet_equipment.router)
 router.include_router(performa_area.router)
