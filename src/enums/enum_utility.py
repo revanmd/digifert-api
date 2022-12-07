@@ -1,7 +1,9 @@
 from src.utils import exception
 
 def check_plant(plant):
-	if plant == '2b':
+	if plant == '4':
+		return 'F004A'
+	elif plant == '2b':
 		return 'F005'
 	elif plant == '1b':
 		return 'F004'
