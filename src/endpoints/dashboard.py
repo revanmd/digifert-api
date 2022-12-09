@@ -110,7 +110,7 @@ async def index(
 
 		if performa_dictionary == None:
 			continue
-		elif float(0) in [performa_dictionary['h'],  performa_dictionary['l']]:
+		elif float(0) == performa_dictionary['h'] and  float(0) == performa_dictionary['l']:
 			status == 'undefined'
 			result_measurement.append({
 				'id': item.id,
