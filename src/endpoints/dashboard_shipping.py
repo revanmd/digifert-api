@@ -82,6 +82,7 @@ async def shipping_load(
 			'status':item.status
 		})
 
+	result.sort(key=lambda x:x['schedule'])
 	return result
 
 @router.get('/docking')
@@ -190,7 +191,10 @@ async def docking_load(
 		func.count(TemanShippingReportLoading.id).label("value")
 	).group_by(
 		TemanShippingReportLoading.date
+	).order_by(
+		TemanShippingReportLoading.date
 	).all()
+
 
 	return group_loading
 	
