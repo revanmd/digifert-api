@@ -261,7 +261,7 @@ async def docking_time(
 
 	
 @router.get('/docking_history')
-async def docking_time(
+async def docking_history(
 	db: Session = Depends(database.create_session),
 ):
 	now = datetime.datetime.now()
@@ -326,4 +326,35 @@ async def docking_time(
 		})
 
 
+	return result
+
+
+@router.get('/queue/loading')
+async def queue_loading(
+	db: Session = Depends(database.create_session),
+):
+	now = datetime.datetime.now()
+	previous_month = now + dateutil.relativedelta.relativedelta(days=-7)
+	previous_month = previous_month.strftime('%Y-%m-%d')
+
+	loading_scheduled = db.query(
+		TemanShipping
+	).filter(
+		TemanShipping.status == 'scheduled',
+		TemanShipping.load_schedule >= previous_month
+	).order_by(
+		TemanShipping.load_schedule.desc()
+	).all()
+
+	result = []
+	for item in loading_scheduled:
+		result.append({
+			'ship': item.ship.lower().title(),
+			'load_schedule': item.load_schedule,
+			'product': item.product,
+			'quantity': item.load_plan,
+			'port_destination': item.port_destination,
+			'doc_no': item.doc_no
+
+		}) 
 	return result
