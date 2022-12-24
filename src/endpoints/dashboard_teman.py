@@ -372,6 +372,14 @@ async def index(
 				'lng': check_in_position[1]
 			}
 
+			result.append({
+				'status': 'check-in',
+				'time': item.check_in_at,
+				'check_point': item.check_point,
+				'check_point_id': item.check_point_id,
+				'position': check_in_position
+			})
+
 		if item.check_out_position != "":
 			check_out_position = item.check_out_position.split(',')
 			check_out_position = {
@@ -379,13 +387,12 @@ async def index(
 				'lng': check_out_position[1]
 			}
 
-		result.append({
-			'check_in_at': item.check_in_at,
-			'check_out_at': item.check_out_at,
-			'check_in_position':check_in_position,
-			'check_out_position': check_out_position,
-			'check_point': item.check_point,
-			'check_point_id': item.check_point_id
-		})
+			result.append({
+				'status': 'check-out',
+				'time': item.check_out_at,
+				'check_point': item.check_point,
+				'check_point_id': item.check_point_id,
+				'position': check_out_position
+			})
 
 	return result
