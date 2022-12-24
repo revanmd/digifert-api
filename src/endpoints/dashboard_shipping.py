@@ -260,3 +260,55 @@ async def docking_time(
 	return result 
 
 	
+@router.get('/docking_history')
+async def docking_time(
+	db: Session = Depends(database.create_session),
+):
+	now = datetime.datetime.now()
+	previous_month = now + dateutil.relativedelta.relativedelta(months=-1)
+	previous_month = previous_month.strftime('%Y-%m-%d')
+
+	dock_query = db.query(TemanDocking.dock).distinct()
+	dock = [item[0] for item in dock_query]
+
+	r_docking_history = []
+	for item in dock:
+		q_docking_history = db.query(
+			TemanDocking
+		).filter(
+			TemanDocking.check_in_at >= previous_month
+		).order_by(
+			TemanDocking.check_in_at.desc()
+		).all()
+
+		t_docking_history = []
+		for docking_item in q_docking_history:
+
+			
+
+			if docking_item.check_out_at is not None:
+				t_docking_history.append({
+					'time': docking_item.check_out_at,
+					'status': 'check-out',
+					'ship': docking_item.ship.lower().title()
+				})
+			else:
+				t_docking_history.append({
+					'time': docking_item.check_in_at,
+					'status': 'check-in',
+					'ship': docking_item.ship.lower().title()
+				})
+
+		t_docking_history.sort(key=lambda x:x['time'], reverse=True)
+		r_docking_history.append(t_docking_history)
+
+	result = []
+
+	for i,item in enumerate(dock):
+		result.append({
+			'dock': item,
+			'history': r_docking_history[i]
+		})
+
+
+	return result
