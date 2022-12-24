@@ -274,7 +274,17 @@ async def docking_time(
 	r_docking_history = []
 	for item in dock:
 		q_docking_history = db.query(
+			TemanDocking.check_in_at,
+			TemanDocking.check_out_at,
+			TemanDocking.ship,
+			TemanShipping.load_plan,
+			TemanShipping.product,
+			TemanShipping.port_destination
+		).select_from(
 			TemanDocking
+		).join(
+			TemanShipping,
+			TemanDocking.shipping_id == TemanShipping.shipping_id
 		).filter(
 			TemanDocking.check_in_at >= previous_month
 		).order_by(
@@ -283,17 +293,22 @@ async def docking_time(
 
 		t_docking_history = []
 		for docking_item in q_docking_history:
-
-			
-
+			print(docking_item)
 			if docking_item.check_out_at is not None:
+
 				t_docking_history.append({
+					'quantity':docking_item.load_plan,
+					'port_destination': docking_item.port_destination,
+					'product': docking_item.product,
 					'time': docking_item.check_out_at,
 					'status': 'check-out',
 					'ship': docking_item.ship.lower().title()
 				})
 			else:
 				t_docking_history.append({
+					'quantity':docking_item.load_plan,
+					'port_destination': docking_item.port_destination,
+					'product': docking_item.product,
 					'time': docking_item.check_in_at,
 					'status': 'check-in',
 					'ship': docking_item.ship.lower().title()
